@@ -1,0 +1,10 @@
+# Publish only SignalLayer's Agent Skill and its support files.
+# Exclude internal GitHub CI and the ClawHub reusable workflow's own checkout.
+.github/
+.git/
+clawhub-source/
+**/clawhub-source/**
+node_modules/
+**/node_modules/**
+.clawhub/
+**/.clawhub/**
