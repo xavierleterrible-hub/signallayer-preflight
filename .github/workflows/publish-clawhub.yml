@@ -1,0 +1,32 @@
+name: Update existing ClawHub Skill (preserve listing)
+
+on:
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Preview only (no new ClawHub version)"
+        type: boolean
+        required: true
+        default: true
+
+permissions:
+  contents: read
+
+concurrency:
+  group: signallayer-existing-clawhub-skill
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    # This targets the SAME publisher and SAME root SKILL.md slug.
+    # Never use a new slug, rename, merge, delete, or re-import to update it.
+    uses: openclaw/clawhub/.github/workflows/skill-publish.yml@main
+    with:
+      owner: "xavierleterrible-hub"
+      skill_path: "."
+      dry_run: ${{ inputs.dry_run }}
+      categories: "security,development,finance"
+      topics: "x402,payment-preflight,base,usdc,mcp"
+      changelog: "Clear free router onboarding, add authorized Coinbase x402 HTTP buyer example, and retain the SignalLayer Preflight identity."
+    secrets:
+      clawhub_token: ${{ secrets.CLAWHUB_TOKEN }}
