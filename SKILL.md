@@ -68,7 +68,13 @@ If using the MCP tool `agent_preflight`, use a client that supports **x402 for M
 
 ## Optional HTTP wallet payer
 
-If a user has *already authorized* a funded Coinbase Agentic Wallet (AWAL), the official Coinbase CLI can make a paid HTTP x402 V2 request with the `--max-amount 10000` price cap (0.01 USDC). See README.md for the copyable command, wallet prerequisites and official documentation. Before invoking it, independently inspect the live unsigned challenge and enforce the approved recipient, Base network, USDC token, maximum amount and spending consent. Never silently log in, fund a wallet, sign or pay without permission. Never automatically retry a failed payment. This is HTTP x402 only, not proof of MCP paid-client compatibility.
+If the user has *already authorized* a funded Coinbase Agentic Wallet (AWAL), Coinbase's maintained CLI can make one x402 V2 **HTTP** request. After separately inspecting and matching the unsigned challenge's Base Mainnet network, native USDC contract, the known SignalLayer payee and the 0.01 USDC price, and **only with explicit authorization to spend that fee**, the following is a copyable example:
+
+```bash
+npx awal@latest x402 pay 'https://signallayer.floot.app/_api/v1/agent/preflight?target=https%3A%2F%2Fexample.com%2F&intent=pay' --max-amount 10000 --json
+```
+
+**The command above spends real USDC if executed.** This Skill never runs it automatically. Do not infer authorization from installing this Skill, a user allowing a preflight check, or a low fee cap. Never silently authenticate, fund, sign, pay or automatically retry. See README.md for wallet prerequisites and verification. This illustrates HTTP x402 only; MCP-paid settlement remains unverified.
 
 ## Abort conditions
 
