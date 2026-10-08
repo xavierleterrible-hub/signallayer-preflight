@@ -11,6 +11,7 @@ on:
   push:
     paths:
       - ".github/workflows/publish-clawhub.yml"
+      - ".clawhubignore"
 
 permissions:
   contents: read
