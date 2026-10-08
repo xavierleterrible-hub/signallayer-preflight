@@ -69,6 +69,17 @@ A read-only GitHub Actions diagnostic, run **without calling Floot or SignalLaye
 
 **Next backend diagnosis (do not change payment facilitator blindly):** inspect the *live* HTTP 402 `extensions.bazaar`, whether the x402 V2 payment payload echoes it, and any `EXTENSION-RESPONSES` after settlement. Compare with the [official Bazaar specification](https://github.com/x402-foundation/x402/blob/main/specs/extensions/bazaar.md). Avoid another self-payment without explicit authorization. Re-query PayAI after any verified correction.
 
+## Production deployment — SignalLayer 2.1.1 (2026-10-07)
+
+- Added **MCP Bazaar discovery extensions** in paid MCP PaymentRequired results for `agent_preflight`, `market_execution_intel`, and `structured_extract`.
+- Read-only verification of all three **live** MCP paid-tool challenges confirmed `extensions.bazaar.info.input.type = "mcp"`, correct tool name, unchanged Base Mainnet network, recipient wallet and fees ($0.01 / $0.03 / $0.02).
+- HTTP paid endpoints also returned their existing `extensions.bazaar` in all three unsigned 402 challenges. The free router remained HTTP 200.
+- Added **privacy-safe payment telemetry** recording whether an incoming authorized x402 payment echoes the Bazaar extension and the facilitator's optional `EXTENSION-RESPONSES` Bazaar status. No private keys, full signatures, or payment authorization payloads are logged.
+- Production `/_api/x402-status` now reports version 2.1.1.
+- The external PayAI seller filter still returned zero resources immediately after deployment, as expected until cataloging happens on a compatible external settlement (or PayAI resolves another cataloging issue). **Do not call this a published PayAI Bazaar listing yet.**
+- Typecheck clean; existing Floot specs passed. Unpaid production tests confirm challenge metadata only; **paid MCP settlement remains unproven**, and should not be advertised as tested.
+- Next business milestone: one independent buyer, with `bazaarEchoed=true` and a successful `bazaarCatalogStatus` if supported. Self-payments are not counted as customers.
+
 ## Major unverified integration gaps
 
 - Does the facilitator index SignalLayer's actual resources in **Bazaar**? A public `.well-known/x402.json` alone does not prove this. Validate via facilitator discovery catalog and extension processing status.
