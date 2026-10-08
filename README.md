@@ -28,6 +28,24 @@ Git installation uses the `SKILL.md` at this repository's root. For other Agent 
 
 **No private keys, mnemonic phrases, tokens, or API credentials are required to install or read this Skill.** Paid usage requires the caller to configure its own **x402 V2-compatible wallet client**, native Base USDC and a spending policy. This repository contains no wallet or signing implementation.
 
+## Install in other supported agents (skills.sh)
+
+This repository also follows the Agent Skills format used by the [skills CLI](https://skills.sh/docs). Preview its root Skill without installing it:
+
+```bash
+npx skills add xavierleterrible-hub/signallayer-preflight --list
+```
+
+Install for an agent such as Claude Code or Codex when you have reviewed its instructions:
+
+```bash
+npx skills add xavierleterrible-hub/signallayer-preflight
+```
+
+This makes the **instructions** available to that agent. It does not configure an x402 wallet or authorize spending. skills.sh rankings depend on actual installations; do not self-install just to inflate counts.
+
+See [marketplace and distribution status](docs/DISTRIBUTION.md). Listings, downloads, HTTP 402 challenges and paid settlements are different measurements.
+
 ## What the Skill does
 
 1. Decide when a payment/recipient preflight is useful and when it is not.
