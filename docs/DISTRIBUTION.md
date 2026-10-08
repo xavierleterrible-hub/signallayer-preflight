@@ -56,6 +56,19 @@ Pricing above is informational; the actual 402 requirement controls transaction 
 
 Use this funnel to decide whether to iterate the product after 14 and 30 days. Do not create paid tests to manufacture marketplace trust or inflate demand.
 
+## Verified external-discovery audit (2026-10-08 01:16 UTC)
+
+A read-only GitHub Actions diagnostic, run **without calling Floot or SignalLayer**, confirmed:
+
+- PayAI `GET /discovery/resources?limit=1`: HTTP 200, **16,626** resources reported in the global catalog.
+- PayAI `GET /discovery/resources?payTo=0x60B3C6c053E926460D1E1053c516c859C95365e6&limit=100`: HTTP 200, **0** items and `pagination.total=0`.
+- **Conclusion:** the catalog itself works, but none of SignalLayer's three paid resources were returned for the payee at the time checked. This is strong evidence of a current PayAI Bazaar discovery gap, not a proof that the x402 payment mechanism fails.
+- Official MCP Registry API check timed out from that GitHub runner. Version status remains unverified by this audit.
+
+[Audit run and downloadable JSON](https://github.com/xavierleterrible-hub/signallayer-preflight/actions/runs/37712026538).
+
+**Next backend diagnosis (do not change payment facilitator blindly):** inspect the *live* HTTP 402 `extensions.bazaar`, whether the x402 V2 payment payload echoes it, and any `EXTENSION-RESPONSES` after settlement. Compare with the [official Bazaar specification](https://github.com/x402-foundation/x402/blob/main/specs/extensions/bazaar.md). Avoid another self-payment without explicit authorization. Re-query PayAI after any verified correction.
+
 ## Major unverified integration gaps
 
 - Does the facilitator index SignalLayer's actual resources in **Bazaar**? A public `.well-known/x402.json` alone does not prove this. Validate via facilitator discovery catalog and extension processing status.
