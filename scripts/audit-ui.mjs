@@ -112,6 +112,14 @@ for(const configuration of options){
 } finally {await browser.close()}
 await fs.mkdir("ui-audit",{recursive:true});
 await fs.writeFile("ui-audit/report.json",JSON.stringify(report,null,2));
+console.log("PUBLIC_CONTROL_INVENTORY "+JSON.stringify({
+  desktop:report.desktop.clickableControls,
+  mobile:report.mobile.clickableControls,
+  desktopExternals:report.desktop.externalLinks,
+  mobileExternals:report.mobile.externalLinks,
+  desktopSuspicious:report.desktop.suspectedDeadLinks,
+  mobileSuspicious:report.mobile.suspectedDeadLinks
+}).slice(0,21000));
 console.log(JSON.stringify({
   mode:report.mode,
   desktop:{pages:report.desktop.pagesChecked,routeIssues:report.desktop.routeIssues?.length,suspicious:report.desktop.suspectedDeadLinks?.length,unlabeled:report.desktop.possibleUnlabeledButtons?.length,pageErrors:report.desktop.pageErrors?.length,controls:report.desktop.clickableControls?.length},
