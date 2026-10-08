@@ -54,7 +54,23 @@ See [marketplace and distribution status](docs/DISTRIBUTION.md). Listings, downl
 4. Use an already configured x402 client, never a manual transfer, for an authorized paid call.
 5. Interpret structured `decision`, `evidence`, `warnings` and `freshness` without making unsupported safety guarantees.
 
-## Try a free discovery request
+## Try SignalLayer for free — no wallet
+
+The router lets an agent choose the appropriate primitive and returns a suggested request without charging USDC:
+
+```bash
+curl --get 'https://signallayer.floot.app/_api/v1/router' \
+  --data-urlencode 'task=Check an unfamiliar x402 endpoint before spending' \
+  --data-urlencode 'target=https://example.com/'
+```
+
+An agent can also fetch the free capability catalog:
+
+```bash
+curl 'https://signallayer.floot.app/_api/tools'
+```
+
+**Unpaid payment-challenge inspection (not a completed risk check):**
 
 ```bash
 curl --get 'https://signallayer.floot.app/_api/v1/agent/preflight' \
@@ -62,7 +78,7 @@ curl --get 'https://signallayer.floot.app/_api/v1/agent/preflight' \
   --data-urlencode 'intent=pay'
 ```
 
-This is **unpaid discovery**, and a `402` response is expected. Do not paste payment signatures or wallet secrets into issue reports.
+The last request is expected to return `402 Payment Required`; it does not produce a paid preflight result or count as revenue. Do not paste payment signatures or wallet secrets into issue reports.
 
 For an additional **read-only** challenge check, run Node.js 20+:
 
