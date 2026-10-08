@@ -1,0 +1,21 @@
+name: Inspect public MCP registry manifest
+on:
+  push:
+    paths:
+      - ".github/workflows/inspect-mcp-manifest.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Fetch and validate the already-public SignalLayer manifest
+        run: |
+          curl --fail --show-error --location --max-time 25 \
+            --output server.json https://signallayer.floot.app/server.json
+          jq -e '
+            .name == "io.github.xavierleterrible-hub/signallayer" and
+            (.remotes | any(.type == "streamable-http" and .url == "https://signallayer.floot.app/_api/mcp"))
+          ' server.json
+          jq '{name, version, description, repository, remotes, websiteUrl}' server.json
