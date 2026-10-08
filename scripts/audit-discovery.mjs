@@ -15,7 +15,7 @@ async function jsonGet(url) {
   try {
     const response = await fetch(url, {
       headers: { Accept: "application/json" },
-      signal: AbortSignal.timeout(12000),
+      signal: AbortSignal.timeout(22000),
       redirect: "manual"
     });
     if (!response.ok) return { status: response.status, ok: false, reason: "http_error" };
@@ -31,9 +31,22 @@ payaiUrl.searchParams.set("payTo", payee);
 payaiUrl.searchParams.set("limit", "100");
 const registryUrl = new URL("https://registry.modelcontextprotocol.io/v0.1/servers");
 registryUrl.searchParams.set("search", expectedMcpName);
-const [payai, mcp] = await Promise.all([jsonGet(payaiUrl), jsonGet(registryUrl)]);
+const baselineUrl = new URL("https://facilitator.payai.network/discovery/resources");
+baselineUrl.searchParams.set("limit", "1");
+const [payai, mcp, baseline] = await Promise.all([
+  jsonGet(payaiUrl),
+  jsonGet(registryUrl),
+  jsonGet(baselineUrl)
+]);
 
 const report = { checkedAt: new Date().toISOString(), mode: "external-catalogs-only" };
+const baselineBody = baseline.ok ? (baseline.body ?? {}) : {};
+report.payaiGlobalCatalog = baseline.ok ? {
+  httpStatus: baseline.status,
+  itemsInSample: Array.isArray(baselineBody.items) ? baselineBody.items.length :
+    Array.isArray(baselineBody.resources) ? baselineBody.resources.length : null,
+  totalAdvertised: baselineBody.pagination?.total ?? null
+} : { status: "unverified", reason: baseline.reason, httpStatus: baseline.status || null };
 if (payai.ok) {
   const body = payai.body ?? {};
   const items = Array.isArray(body.items) ? body.items :
