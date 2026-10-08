@@ -1,0 +1,26 @@
+name: Publish SignalLayer Preflight to ClawHub
+
+on:
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'Preview only (no ClawHub publication)'
+        required: true
+        default: true
+        type: boolean
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  publish:
+    uses: openclaw/clawhub/.github/workflows/skill-publish.yml@main
+    with:
+      skill_path: '.'
+      dry_run: ${{ inputs.dry_run }}
+      changelog: 'Initial SignalLayer Preflight integration and x402 payment safeguards.'
+      categories: 'integrations,security,finance'
+      topics: 'x402,base,usdc,preflight,agent-tools'
+    secrets:
+      clawhub_token: ${{ secrets.CLAWHUB_TOKEN }}
