@@ -54,6 +54,26 @@ node scripts/check-offer.mjs https://example.com/
 
 The helper never signs or settles anything; it only checks the offer's network, asset, amount and recipient against independently known constants. It does make an unpaid network request to the live service. Do not treat a successful check as a proof that the target is safe.
 
+## Optional: pay with Coinbase Agentic Wallet (no raw key handling)
+
+An agent with an **already authorized and funded** Coinbase Agentic Wallet (AWAL) can invoke SignalLayer's paid HTTP endpoint using a maintained x402 payer. This option does not require pasting a raw wallet private key into SignalLayer. **The agent must obtain user authorization to spend $0.01 before paying.**
+
+1. Follow [Coinbase's official wallet quickstart](https://docs.cdp.coinbase.com/agentic-wallet/cli/quickstart) to authenticate and fund a dedicated, low-balance Base USDC wallet. Check it before paying:
+
+```bash
+npx awal@latest status
+npx awal@latest balance
+```
+
+2. Independently inspect the unsigned 402 challenge and check network, USDC asset, recipient and amount against trusted policy using `node scripts/check-offer.mjs https://example.com/`. A price cap alone does **not** authenticate a recipient.
+3. Only after explicit authorization, invoke **one real paid HTTP request**, capped at 10,000 atomic USDC units ($0.01):
+
+```bash
+npx awal@latest x402 pay 'https://signallayer.floot.app/_api/v1/agent/preflight?target=https%3A%2F%2Fexample.com%2F&intent=pay' --max-amount 10000 --json
+```
+
+**Warning:** The last command can transfer actual USDC. This documentation example was not executed or used to generate self-payment transactions. Never loop or automatically retry a paid request. Do not fund this with an important primary wallet. If Coinbase CLI options change, consult its [current x402 payment documentation](https://docs.cdp.coinbase.com/agentic-wallet/cli/skills/pay-for-service). This demonstrates an HTTP buyer path, **not x402-over-MCP**.
+
 ## Which SignalLayer tool should an agent call?
 
 | MCP tool | Cost (USDC) | Use when |
