@@ -66,6 +66,10 @@ curl -X POST 'https://signallayer.floot.app/_api/v1/router' \
 
 If using the MCP tool `agent_preflight`, use a client that supports **x402 for MCP tool calls**, not only the HTTP `PAYMENT-SIGNATURE` header. A previous HTTP settlement does not demonstrate MCP paid interoperability.
 
+## Optional HTTP wallet payer
+
+If a user has *already authorized* a funded Coinbase Agentic Wallet (AWAL), the official Coinbase CLI can make a paid HTTP x402 V2 request with the `--max-amount 10000` price cap (0.01 USDC). See README.md for the copyable command, wallet prerequisites and official documentation. Before invoking it, independently inspect the live unsigned challenge and enforce the approved recipient, Base network, USDC token, maximum amount and spending consent. Never silently log in, fund a wallet, sign or pay without permission. Never automatically retry a failed payment. This is HTTP x402 only, not proof of MCP paid-client compatibility.
+
 ## Abort conditions
 
 - Network, token, payment recipient, scheme or amount is inconsistent with user-approved policy.
