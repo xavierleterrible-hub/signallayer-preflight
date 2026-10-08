@@ -1,7 +1,7 @@
 ---
 name: signallayer-preflight
 description: Review x402 payment terms and Base recipient risks before a user-authorized API purchase or wallet interaction. Use for unfamiliar x402 endpoints or Base addresses when an agent needs bounded, evidence-aware preflight signals, not a guarantee of safety. Requires a separately configured x402 V2 payer for paid calls.
-license: MIT
+license: MIT-0
 compatibility: Network access to signallayer.floot.app; payment only via a user-authorized x402 V2-compatible wallet client funded with native Base USDC. No secrets or credentials are required to install the skill.
 metadata:
   author: SignalLayer
