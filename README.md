@@ -12,6 +12,14 @@ SignalLayer does **not** guarantee that a wallet, API, or smart contract is trus
 
 ## Install in OpenClaw
 
+Install directly from the published ClawHub listing:
+
+```bash
+openclaw skills install @xavierleterrible-hub/signallayer-preflight
+```
+
+Or install directly from GitHub if your client supports Git sources:
+
 ```bash
 openclaw skills install git:xavierleterrible-hub/signallayer-preflight@main
 ```
@@ -84,4 +92,4 @@ python scripts/validate.py
 
 This test is local-only and does not incur hosted service or Floot usage. For support, open a [GitHub issue](https://github.com/xavierleterrible-hub/signallayer-preflight/issues) without including credentials.
 
-**License:** MIT applies only to this integration's documentation and scripts; the remotely hosted SignalLayer API is a separate service.
+**License:** MIT-0 applies only to this integration's documentation and scripts; the remotely hosted SignalLayer API is a separate service.
