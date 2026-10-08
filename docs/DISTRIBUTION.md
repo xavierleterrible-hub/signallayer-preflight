@@ -80,6 +80,33 @@ A read-only GitHub Actions diagnostic, run **without calling Floot or SignalLaye
 - Typecheck clean; existing Floot specs passed. Unpaid production tests confirm challenge metadata only; **paid MCP settlement remains unproven**, and should not be advertised as tested.
 - Next business milestone: one independent buyer, with `bazaarEchoed=true` and a successful `bazaarCatalogStatus` if supported. Self-payments are not counted as customers.
 
+## Read-only production regression suite (2026-10-08)
+
+A GitHub Actions smoke suite validates eight **unsigned** public requests: free router and catalog, plus all three HTTP `402` challenges and all three MCP paid-tool `PaymentRequired` responses. It verifies Base Mainnet, native USDC, unchanged payee, price (10000 / 30000 / 20000 atomic units), Bazaar metadata, and MCP tool-name binding. The checker uses `x-signallayer-source: ci-smoke` to differentiate self-generated diagnostics from real buyer traffic.
+
+- [Production smoke CI (8/8 PASS)](https://github.com/xavierleterrible-hub/signallayer-preflight/actions/runs/37731143875)
+- Script: [scripts/smoke-public.mjs](../scripts/smoke-public.mjs)
+- Re-run as needed via [Read-only production smoke](https://github.com/xavierleterrible-hub/signallayer-preflight/actions/workflows/smoke-public.yml); it never signs or transfers USDC.
+
+### PayAI Bazaar caveats confirmed from upstream
+
+- [PayAI issue #47](https://github.com/PayAINetwork/x402-solana/issues/47): PayAI explains that cataloging is driven by payments it processes via `/verify` and `/settle`; there is no manual submission endpoint. A proper signed `/verify` that echoes the extension may cause indexation without moving funds, but requires an authorized wallet client; do not manufacture signatures.
+- [PayAI issue #40](https://github.com/PayAINetwork/x402-solana/issues/40): Some older x402 clients dropped `PaymentRequired.extensions` when constructing the payment payload, preventing cataloging despite a successful settlement. The known `x402-solana` case was fixed upstream, but **do not assume** every buyer client echoes the extension.
+- [PayAI issue #34](https://github.com/PayAINetwork/x402-solana/issues/34): A merchant's valid-on-wire Bazaar metadata still failed at settlement because wildcard route parameters did not match schema-required property names. SignalLayer uses fixed route paths; that specific wildcard explanation is not directly applicable.
+- The current absence of SignalLayer from PayAI by payee may simply be due to no independent authorized settlement with echoed metadata. It is **not** evidence that the USDC receiving wallet or payment verifier is broken.
+
+### Conversion-focused MCP metadata improvement pending Floot build quota
+
+Glama currently describes `agent_preflight` as under-specified because the description begins with *when to use* instead of *what it computes and returns*. Update `helpers/signalLayerMcp.tsx` descriptions, preserving tool identifiers and input/output contracts:
+
+- `agent_preflight`: Explicitly explain that it fetches/inspects live public x402 terms or a Base recipient and returns a structured verdict, payment-terms evidence, warnings, confidence and freshness. Disclose $0.01 USDC, wallet approval, limits and no security guarantee.
+- `market_execution_intel`: Quote-derived Base ERC-20 execution costs, slippage/size-impact signals, non-execution, $0.03 USDC.
+- `structured_extract`: Requested fields extracted from a public webpage with evidence and missing-value/null handling, $0.02 USDC.
+- `signal_layer_router`: Free task-to-tool recommendation; can legitimately return `no_match`, does **not** enumerate the whole catalog.
+- `signal_layer_catalog`: Free inventory of available capabilities and current fees, **not** per-task routing.
+
+Preserve the three paid primitives, two free tools, tool names and all price/wallet terms. Before publishing, typecheck and run existing tests, test sandbox MCP `tools/list`, then inspect live Glama only after a real crawl. No score increase or external buyer can be promised.
+
 ## Major unverified integration gaps
 
 - Does the facilitator index SignalLayer's actual resources in **Bazaar**? A public `.well-known/x402.json` alone does not prove this. Validate via facilitator discovery catalog and extension processing status.
