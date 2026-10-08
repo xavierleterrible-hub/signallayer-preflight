@@ -1,0 +1,26 @@
+name: Read-only production smoke
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - "scripts/smoke-public.mjs"
+      - ".github/workflows/smoke-public.yml"
+permissions:
+  contents: read
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate unsigned HTTP and MCP payment requirements, no wallet
+        run: node scripts/smoke-public.mjs | tee smoke-report.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: signal-layer-readonly-smoke
+          path: smoke-report.json
+          retention-days: 14
