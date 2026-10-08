@@ -39,7 +39,22 @@ const [payai, mcp, baseline] = await Promise.all([
   jsonGet(baselineUrl)
 ]);
 
+const clawhubUrl = "https://clawhub.ai/api/v1/skills/signallayer-preflight";
+const clawhub = await jsonGet(clawhubUrl);
 const report = { checkedAt: new Date().toISOString(), mode: "external-catalogs-only" };
+const clawhubRecord = clawhub.ok ? (clawhub.body?.skill || clawhub.body || {}) : {};
+report.clawhub = clawhub.ok ? {
+  status: "responded",
+  httpStatus: clawhub.status,
+  slug: clawhubRecord.slug ?? null,
+  displayName: clawhubRecord.displayName ?? clawhubRecord.name ?? null,
+  latestVersion: clawhubRecord.latestVersion ?? clawhubRecord.latest?.version ?? null,
+  statsDownloads: clawhubRecord.statsDownloads ?? clawhubRecord.stats?.downloads ?? null,
+  statsSkillsShInstalls: clawhubRecord.statsSkillsShInstalls ?? null,
+  statsInstallsCurrent: clawhubRecord.statsInstallsCurrent ?? null,
+  statsInstallsAllTime: clawhubRecord.statsInstallsAllTime ?? null,
+  note: "Downloads count archive fetches, not distinct customers or paid API calls."
+} : { status: "unverified", httpStatus: clawhub.status ?? null, reason: clawhub.reason ?? null };
 const baselineBody = baseline.ok ? (baseline.body ?? {}) : {};
 report.payaiGlobalCatalog = baseline.ok ? {
   httpStatus: baseline.status,
