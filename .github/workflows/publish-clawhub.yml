@@ -8,6 +8,9 @@ on:
         type: boolean
         required: true
         default: true
+  push:
+    paths:
+      - ".github/workflows/publish-clawhub.yml"
 
 permissions:
   contents: read
@@ -24,7 +27,7 @@ jobs:
     with:
       owner: "xavierleterrible-hub"
       skill_path: "."
-      dry_run: ${{ inputs.dry_run }}
+      dry_run: ${{ github.event_name == 'push' || inputs.dry_run }}
       categories: "security,development,finance"
       topics: "x402,payment-preflight,base,usdc,mcp"
       changelog: "Clear free router onboarding, add authorized Coinbase x402 HTTP buyer example, and retain the SignalLayer Preflight identity."
