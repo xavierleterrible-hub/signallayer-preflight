@@ -110,6 +110,30 @@ for(const configuration of options){
   await context.close();
 }
 } finally {await browser.close()}
+// A homepage link to a paid API may legitimately return HTTP 402, but that is a
+// poor browser-facing destination. GET to an MCP POST endpoint returns HTTP 405.
+// Capture these safely without a signer, body submission, or authorization.
+const apiLinks = [...new Set([...(report.desktop.internalLinkCount ? []:[]),
+  ...(report.desktop.clickableControls || []),
+  ...(report.mobile.clickableControls || [])].map(x=>x.href).filter(Boolean))]
+  .map(href=>safeUrl(href,base+"/"))
+  .filter(u=>u && u.origin===baseUrl.origin && u.pathname.startsWith("/_api/"));
+const verified=new Set();
+report.apiLinkChecks=[];
+for(const u of apiLinks){
+  const uri=u.toString();
+  if(verified.has(uri))continue;
+  verified.add(uri);
+  try{
+    const res=await fetch(uri,{redirect:"manual",headers:{"user-agent":"SignalLayer-UI-LinkAudit/1.0","x-signallayer-source":"ci-ui-audit"},signal:AbortSignal.timeout(12000)});
+    const classification=res.status===402?"intentional-payment-challenge-not-friendly-for-browser":
+      res.status===405?"HTTP-method-mismatch-link-to-POST-only-endpoint":
+      res.status>=400?"error":"working-http";
+    report.apiLinkChecks.push({path:u.pathname,status:res.status,classification,fromHome:true});
+  }catch(e){report.apiLinkChecks.push({path:u.pathname,error:cutoff(e.message),classification:"unreachable"});}
+}
+console.log("PUBLIC_API_LINK_STATUSES "+JSON.stringify(report.apiLinkChecks));
+
 await fs.mkdir("ui-audit",{recursive:true});
 await fs.writeFile("ui-audit/report.json",JSON.stringify(report,null,2));
 console.log("PUBLIC_CONTROL_INVENTORY "+JSON.stringify({
