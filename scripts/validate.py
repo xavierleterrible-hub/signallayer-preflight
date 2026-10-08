@@ -19,6 +19,6 @@ assert "private key" in skill.lower()
 assert "openclaw skills install git:xavierleterrible-hub/signallayer-preflight@main" in readme
 for disallowed in ("mnemonic=", "PRIVATE_KEY=", "sk_live_", "ghp_", "clh_"):
     assert disallowed not in skill + readme, "possible secret in published docs"
-for path in ("LICENSE", "scripts/check-offer.mjs", ".github/workflows/validate.yml"):
+for path in ("LICENSE", "scripts/check-offer.mjs", "scripts/offer-terms.mjs", "scripts/test-offer.mjs", "docs/DISTRIBUTION.md", ".github/workflows/validate.yml"):
     assert (root / path).is_file(), path
 print("PASS: local Agent Skills packaging checks; no network requests")
